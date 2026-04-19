@@ -17,9 +17,6 @@ export default function Flatcards() {
         <View style={[styles.card,styles.cardthree]}>
           <Text>Blue</Text>
         </View>
-        <View style={[styles.card,styles.cardthree]}>
-          <Text>Blue</Text>
-        </View>
       </View>
     </SafeAreaView>
   )

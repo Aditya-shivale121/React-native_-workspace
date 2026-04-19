@@ -1,24 +1,24 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Flatcards from '@/components/Flatcards'
-import Elevated from '@/components/Elevated'
-import FancyCard from '@/components/FancyCard'
-import { ScrollView } from 'react-native'
-import ActionCard from '@/components/ActionCard'
+import ActionCard from "@/components/ActionCard";
+import Elevated from "@/components/Elevated";
+import Flatcards from "@/components/Flatcards";
+import FancyCard from "@/components/FancyCard";
+import ContactList from "@/components/contactList";
+import React from "react";
+import { ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const index = () => {
+const Index = () => {
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <Flatcards/>
-        <Elevated/>
-        <FancyCard/>
-        <ActionCard/>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
+        <Flatcards />
+        <Elevated />
+        <FancyCard />
+        <ActionCard />
+        <ContactList />
       </ScrollView>
-      
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default index
+export default Index;
