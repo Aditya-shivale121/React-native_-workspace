@@ -1,98 +1,159 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useState } from 'react';
 
-export default function HomeScreen() {
+import {
+  FlatList,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from 'react-native';
+
+
+//Constants
+import { currencyByRupee, Currency } from './constants';
+//Component
+import CurrencyButton from '../../components/CurrancyBtn';
+
+import Snackbar from 'react-native-snackbar';
+
+
+
+
+const App = (): JSX.Element => {
+  const [inputValue, setInputValue] = useState('')
+  const [resultValue, setResultValue] = useState('')
+  const [targetCurrency, setTargetCurrency] = useState('')
+  
+  const buttonPressed = (targetValue: Currency) => {
+    if (!inputValue) {
+      return Snackbar.show({
+        text: "Enter a value to convert",
+        backgroundColor: "#EA7773",
+        textColor: "#000000"
+      })
+    }
+
+    const inputAmount = parseFloat(inputValue)
+    if (!isNaN(inputAmount)) {
+      const convertedValue = inputAmount * targetValue.value
+      const result = `${targetValue.symbol} ${convertedValue.toFixed(2)  }`
+      setResultValue(result)
+      setTargetCurrency(targetValue.name)
+    } else {
+      return Snackbar.show({
+        text: "NOt a valid number to convert",
+        backgroundColor: "#F4BE2C",
+        textColor: "#000000"
+      })
+    }
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
+    <>
+      <StatusBar/>
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <View style={styles.rupeesContainer}>
+            <Text style={styles.rupee}>₹</Text>
+            <TextInput
+            maxLength={14}
+            value={inputValue}
+            clearButtonMode='always' //only for iOS
+            onChangeText={setInputValue}
+            keyboardType='number-pad'
+            placeholder='Enter amount in Rupees'
             />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+          </View>
+          {resultValue && (
+            <Text style={styles.resultTxt} >
+              {resultValue}
+            </Text>
+          )}
+        </View>
+        <View style={styles.bottomContainer}>
+          <FlatList
+          numColumns={3}
+          data={currencyByRupee}
+          keyExtractor={item => item.name}
+          renderItem={({item}) => (
+            <Pressable
+            style={[
+              styles.button, 
+              targetCurrency === item.name && styles.selected
+            ]}
+            onPress={() => buttonPressed(item)}
+            >
+              <CurrencyButton {...item} />
+            </Pressable>
+          )}
+          />
+        </View>
+      </View>
+      
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#515151',
+  },
+  topContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+  },
+  resultTxt: {
+    fontSize: 32,
+    color: '#000000',
+    fontWeight: '800',
+  },
+  rupee: {
+    marginRight: 8,
+
+    fontSize: 22,
+    color: '#000000',
+    fontWeight: '800',
+  },
+  rupeesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  inputAmountField: {
+    height: 40,
+    width: 200,
+    padding: 8,
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  bottomContainer: {
+    flex: 3,
+  },
+  button: {
+    flex: 1,
+
+    margin: 12,
+    height: 60,
+
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    elevation: 2,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: '#333',
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  selected: {
+    backgroundColor: '#ffeaa7',
   },
 });
+
+export default App;
